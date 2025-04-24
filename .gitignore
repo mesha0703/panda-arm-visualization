@@ -1,0 +1,5 @@
+# OS/editor files
+.DS_Store       # macOS
+.idea/          # JetBrains IDEs
+.vscode/        # VS Code
+.DS_Store
