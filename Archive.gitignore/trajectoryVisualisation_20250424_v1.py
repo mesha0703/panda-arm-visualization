@@ -4,15 +4,14 @@ from matplotlib.widgets import Slider
 from numpy import sin, cos
 
 # Corrected Franka Emika Panda DH parameters (modified DH convention)
-# a, alpha, d, theta
 DH_PARAMS = [
-    [0,        0,          0.333,  0],
-    [0,        -np.pi/2,   0,      0],
-    [0,        np.pi/2,    0.316,  0],
-    [0.0825,   np.pi/2,    0,      0],
-    [-0.0825,  -np.pi/2,   0.384,  0],
-    [0.0,      np.pi/2,    0,      0],
-    [0.088,    np.pi/2,    0.107,  0]
+    [0,        0,          0.333, 0],  # Joint1: a=0, alpha=0, d=0.333, theta=q1
+    [0,        -np.pi/2,   0,      0],  # Joint2: a=0, alpha=-pi/2, d=0, theta=q2
+    [0,        np.pi/2,    0.316,  0],  # Joint3: a=0, alpha=pi/2, d=0.316, theta=q3
+    [0.0825,   np.pi/2,    0,      0],  # Joint4: a=0.0825, alpha=pi/2, d=0, theta=q4
+    [-0.0825,  -np.pi/2,   0.384,  0],  # Joint5: a=-0.0825, alpha=-pi/2, d=0.384, theta=q5
+    [0.0,      np.pi/2,    0,      0],  # Joint6: a=0, alpha=pi/2, d=0, theta=q6
+    [0.088,    np.pi/2,    0.107,  0]   # Joint7: a=0.088, alpha=pi/2, d=0.107, theta=q7
 ]
 
 def load_trajectories(filepath):
@@ -80,57 +79,42 @@ def forward_kinematics(joint_angles):
         i += 1
         
     return np.array(positions)
+
 def update(val):
     traj_idx = int(traj_slider.val)
     frame_idx = int(frame_slider.val)
     
     # Update frame slider max value based on selected trajectory
-    current_traj = trajectories[traj_idx]
-    frame_slider.valmax = len(current_traj) - 1
+    frame_slider.valmax = len(trajectories[traj_idx]) - 1
     frame_slider.ax.set_xlim(frame_slider.valmin, frame_slider.valmax)
     
-    # Get current joint angles and EEF positions
-    joint_angles = current_traj[frame_idx]['joint_angles']
+    # Get current joint angles
+    current_frame = trajectories[traj_idx][frame_idx]
+    joint_angles = current_frame['joint_angles']
     
-    # Update arm plot
+    # Update plot
     positions = forward_kinematics(joint_angles)
-    arm_line.set_data(positions[:, 0], positions[:, 1])
-    arm_line.set_3d_properties(positions[:, 2])
-    
-    # Update EEF trajectory plot
-    eef_positions = np.array([frame['eef_pose'][:3] for frame in current_traj[:frame_idx+1]])
-    if len(eef_positions) > 0:
-        eef_line.set_data(eef_positions[:, 0], eef_positions[:, 1])
-        eef_line.set_3d_properties(eef_positions[:, 2])
-    else:
-        eef_line.set_data([], [])
-        eef_line.set_3d_properties([])
-    
+    line.set_data(positions[:, 0], positions[:, 1])
+    line.set_3d_properties(positions[:, 2])
     fig.canvas.draw_idle()
 
 # Load trajectories
-filepath = "trajectories.csv"
+filepath = "gelenkwinkel_mehrere.csv"
 trajectories = load_trajectories(filepath)
 
 # Create initial plot
 fig = plt.figure(figsize=(10, 8))
 ax = fig.add_subplot(111, projection='3d')
 initial_joints = trajectories[0][0]['joint_angles']
-initial_positions = forward_kinematics(initial_joints)
-
-# Plot arm and EEF trajectory
-arm_line, = ax.plot(initial_positions[:, 0], initial_positions[:, 1], initial_positions[:, 2], 
-                   'o-', lw=3, color='blue', label='Arm')
-eef_line, = ax.plot([], [], [], 'r--', lw=1, alpha=0.7, label='EEF Path')
-
+positions = forward_kinematics(initial_joints)
+line, = ax.plot(positions[:, 0], positions[:, 1], positions[:, 2], 'o-', lw=3)
 ax.set_xlim([-0.5, 0.5])
 ax.set_ylim([-0.5, 0.5])
 ax.set_zlim([0.0, 1.0])
 ax.set_xlabel('X')
 ax.set_ylabel('Y')
 ax.set_zlabel('Z')
-ax.set_title('Franka Emika Panda Arm Visualization with EEF Trajectory')
-ax.legend()
+ax.set_title('Franka Emika Panda Arm Visualization')
 
 # Adjust the main plot to make room for the sliders
 plt.subplots_adjust(bottom=0.25)

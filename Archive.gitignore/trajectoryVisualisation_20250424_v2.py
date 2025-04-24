@@ -6,13 +6,13 @@ from numpy import sin, cos
 # Corrected Franka Emika Panda DH parameters (modified DH convention)
 # a, alpha, d, theta
 DH_PARAMS = [
-    [0,        0,          0.333,  0],
-    [0,        -np.pi/2,   0,      0],
-    [0,        np.pi/2,    0.316,  0],
-    [0.0825,   np.pi/2,    0,      0],
-    [-0.0825,  -np.pi/2,   0.384,  0],
-    [0.0,      np.pi/2,    0,      0],
-    [0.088,    np.pi/2,    0.107,  0]
+    [0,        0,          0.333,  0],  # Joint1: a=0, alpha=0, d=0.333, theta=q1
+    [0,        -np.pi/2,   0,      0],  # Joint2: a=0, alpha=-pi/2, d=0, theta=q2
+    [0,        np.pi/2,    0.316,  0],  # Joint3: a=0, alpha=pi/2, d=0.316, theta=q3
+    [0.0825,   np.pi/2,    0,      0],  # Joint4: a=0.0825, alpha=pi/2, d=0, theta=q4
+    [-0.0825,  -np.pi/2,   0.384,  0],  # Joint5: a=-0.0825, alpha=-pi/2, d=0.384, theta=q5
+    [0.0,      np.pi/2,    0,      0],  # Joint6: a=0, alpha=pi/2, d=0, theta=q6
+    [0.088,    np.pi/2,    0.107,  0]   # Joint7: a=0.088, alpha=pi/2, d=0.107, theta=q7
 ]
 
 def load_trajectories(filepath):
@@ -109,7 +109,7 @@ def update(val):
     fig.canvas.draw_idle()
 
 # Load trajectories
-filepath = "trajectories.csv"
+filepath = "gelenkwinkel_mehrere.csv"
 trajectories = load_trajectories(filepath)
 
 # Create initial plot
