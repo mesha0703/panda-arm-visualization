@@ -27,7 +27,7 @@
 ## Usage
 
 ```bash
-python franka_visualization.py
+python panda_arm_visualization.py
 ```
 - Use the sliders to control trajectory playback.
 
