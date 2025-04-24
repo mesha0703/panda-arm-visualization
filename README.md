@@ -27,7 +27,7 @@
 ## Usage
 
 ```bash
-python franka_visualization.py
+python franka_visualization.py```
 - Use the sliders to control trajectory playback.
 
 ## Data Format
